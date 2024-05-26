@@ -27,7 +27,6 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) {
 
             Collider2D targetObject = Physics2D.OverlapPoint(mousePosition, packableLayerMask);
-            Debug.Log(targetObject.GetComponent<Packable>());
 
             if (targetObject && targetObject.GetComponentInParent<Packable>()) {
                 selectedObject = targetObject.transform.parent.gameObject;

@@ -33,8 +33,7 @@ public class Packable : MonoBehaviour
         if (selectedOrientationIndex >= orientation.Length) {
             selectedOrientationIndex = 0;
         }
-        
+
         orientation[selectedOrientationIndex].SetActive(true);
-        Debug.Log(selectedOrientationIndex);
     }
 }
