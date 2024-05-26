@@ -91,4 +91,8 @@ public class Packable : MonoBehaviour
         }
         return false;
     }
+
+    public void Rotate(bool clockwise) {
+        
+    }
 }

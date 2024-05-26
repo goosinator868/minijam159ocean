@@ -73,7 +73,7 @@ public class Player : MonoBehaviour
 
             // Removed from bag
             if (!gridObject) {
-                selectedPackable.UpdateSetState(worldPosition, selectedObject.transform.rotation);
+                selectedPackable.ReturnToStartState();
                                     
                 selectedObject = null;
                 selectedPackable = null;
