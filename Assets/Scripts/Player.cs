@@ -37,7 +37,6 @@ public class Player : MonoBehaviour
                 selectedPackable = selectedObject.GetComponentInParent<Packable>();
                 Vector3 mouseSnapTo = selectedPackable.GetMouseSnapTo();
                 offset = new Vector3(0 - mouseSnapTo.x, 0 - mouseSnapTo.y, mouseSnapTo.z - mousePosition.z); //selectedObject.transform.position - mousePosition;
-                Debug.Log(offset);
             }
         }
 
@@ -54,6 +53,35 @@ public class Player : MonoBehaviour
             Collider2D gridObject = Physics2D.OverlapPoint(mousePosition, gridLayerMask);
             Vector3 worldPosition = new Vector3((float) Math.Round(mousePosition.x + offset.x), (float) Math.Round(mousePosition.y + offset.y), (float) Math.Round(mousePosition.y + offset.y));
             
+            bool overlaps = false;
+            Tilemap packableTilemap = selectedPackable.GetTilemap();
+            HashSet<Vector3Int> packableWorldCellPositions = new HashSet<Vector3Int>();
+            
+            foreach (Vector3Int packablePosition in packableTilemap.cellBounds.allPositionsWithin) {
+                if (packableTilemap.GetTile(packablePosition)) {
+                    Vector3 worldPackablePosition = packableTilemap.CellToWorld(packablePosition);
+                    Vector3Int worldPackableCellPosition = new Vector3Int((int) Math.Round(worldPackablePosition.x), (int) Math.Round(worldPackablePosition.y), (int) Math.Round(worldPackablePosition.z));
+                    packableWorldCellPositions.Add(worldPackableCellPosition);
+                }
+            }
+
+            foreach (GameObject packableObject in packableObjects) {
+                Packable otherPackable = packableObject.GetComponent<Packable>();
+                overlaps = otherPackable.ContainsAny(packableWorldCellPositions);
+                Debug.Log(overlaps);
+                if (overlaps) {
+                    break;
+                }
+            }
+
+            if (overlaps) {
+                selectedPackable.ReturnToSetState();
+
+                selectedObject = null;
+                selectedPackable = null;
+                return;
+            }
+
             // Remove from bag
             if (!gridObject) {
                 selectedPackable.UpdateSetState(worldPosition, selectedObject.transform.rotation);
@@ -65,8 +93,7 @@ public class Player : MonoBehaviour
 
             // ** Check if valid location in bag
             // Populate set of packable; if set is fully emptied, the location is valid
-            Tilemap packableTilemap = selectedPackable.GetTilemap();
-            HashSet<Vector3Int> packableWorldCellPositions = new HashSet<Vector3Int>();
+            packableWorldCellPositions.Clear();
             foreach (Vector3Int packablePosition in packableTilemap.cellBounds.allPositionsWithin) {
                 if (packableTilemap.GetTile(packablePosition)) {
                     Vector3 worldPackablePosition = packableTilemap.CellToWorld(packablePosition);
@@ -75,8 +102,8 @@ public class Player : MonoBehaviour
                     packableWorldCellPositions.Add(worldPackableCellPosition);
                 }
             }
-            Debug.Log(packableWorldCellPositions.Count);
 
+            bool isInBounds = false;
             foreach (Vector3Int bagPosition in bagTilemap.cellBounds.allPositionsWithin) {
                 Vector3Int worldBagCellPosition = grid.WorldToCell(bagTilemap.CellToWorld(bagPosition));
                 // Check that bag tile is valid
@@ -84,27 +111,33 @@ public class Player : MonoBehaviour
                     foreach (Vector3Int packablePosition in packableWorldCellPositions) {
                         // Get world cell location of packable object
                         if (packablePosition.Equals(worldBagCellPosition)) {
+                            // Remove if found
                             packableWorldCellPositions.Remove(packablePosition);
-
-                            // Removed every spot
-                            if (packableWorldCellPositions.Count == 0) {
-                                selectedPackable.UpdateSetState(worldPosition, selectedObject.transform.rotation);
-                                
-                                selectedObject = null;
-                                selectedPackable = null;
-                                return;
-                            }
-                            
                             break;
                         }
+                    }
+                    // Removed every spot
+                    if (packableWorldCellPositions.Count == 0) {
+                        isInBounds = true;
+                        break;
                     }
                 }
             }
 
-            selectedPackable.ReturnToSetState();
+            if (!isInBounds) {
+                selectedPackable.ReturnToSetState();
+
+                selectedObject = null;
+                selectedPackable = null;
+                return;
+            }
+
+            selectedPackable.UpdateSetState(worldPosition, selectedObject.transform.rotation);
 
             selectedObject = null;
             selectedPackable = null;
+            return;
+            
         }
 
     }

@@ -13,7 +13,7 @@ public class Packable : MonoBehaviour
     [SerializeField] private int selectedOrientationIndex;
     [SerializeField] private GameObject[] orientation;
     private Transform mouseSnapTo;
-    private List<Vector3Int> occupiedWorldPositions = new List<Vector3Int>();
+    private HashSet<Vector3Int> occupiedWorldPositions = new HashSet<Vector3Int>();
 
     // Start is called before the first frame update
     void Start()
@@ -41,6 +41,7 @@ public class Packable : MonoBehaviour
         setRotation = rotation;
         transform.position = setPosition;
         transform.rotation = setRotation;
+        UpdateOccupiedWorldPositions();
     }
     public void ChangeOrientation() {
         orientation[selectedOrientationIndex].SetActive(false);
@@ -78,7 +79,16 @@ public class Packable : MonoBehaviour
         }
     }
 
-    public List<Vector3Int> GetOccupiedWorldPositions() {
+    public HashSet<Vector3Int> GetOccupiedWorldPositions() {
         return occupiedWorldPositions;
+    }
+
+    public bool ContainsAny(HashSet<Vector3Int> positions) {
+        foreach(Vector3Int position in positions) {
+            if (occupiedWorldPositions.Contains(position)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
