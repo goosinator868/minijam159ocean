@@ -27,8 +27,8 @@ public class Packable : MonoBehaviour
     }
 
     public void ReturnToStartState() {
-        transform.position = startPosition;
-        transform.rotation = startRotation;
+        UpdateSetState(startPosition, startRotation);
+        UpdateOccupiedWorldPositions();
     }
 
     public void ReturnToSetState() {
