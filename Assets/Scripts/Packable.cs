@@ -36,4 +36,8 @@ public class Packable : MonoBehaviour
 
         orientation[selectedOrientationIndex].SetActive(true);
     }
+
+    public bool AttemptToClaimTiles() {
+        return true;
+    }
 }

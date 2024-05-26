@@ -51,6 +51,7 @@ public class Player : MonoBehaviour
             if (gridObject) {
                 Vector3 tilePosition = new Vector3((int) Math.Round(mousePosition.x), (int) Math.Round(mousePosition.y), mousePosition.z - mousePosition.z);
                 // TileBase tile = gridObject.GetComponent<Tilemap>().GetTile(tilePosition);
+                selectedPackable.AttemptToClaimTiles();
                 selectedPackable.UpdateSetState(tilePosition, selectedObject.transform.rotation);
             } else {
                 selectedPackable.ReturnToSetState();
