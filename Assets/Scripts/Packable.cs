@@ -104,6 +104,7 @@ public class Packable : MonoBehaviour
 
     public void PutInBag() {
         inBag = true;
+        Player.instance.checkIfWonGame();
     }
 
     public void TakeOutOfBag() {

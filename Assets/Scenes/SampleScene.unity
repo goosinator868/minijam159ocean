@@ -506,6 +506,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c54135d00c6f0ea41ac1467307dacfa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ui: {fileID: 1646986550}
   packableLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -746,6 +747,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8bfdde067f9dd1c4681a2bb2b12ab72c, type: 3}
+--- !u!1 &1646986550 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5992459555542637373, guid: 0946b1ef54a6bf147a360c4ff4e49d8e, type: 3}
+  m_PrefabInstance: {fileID: 1763161501206090137}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1683901541
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -10,17 +10,17 @@ public class Player : MonoBehaviour
     private Packable selectedPackable;
     private Vector3 offset;
     private bool orientationChange = false;
+    [SerializeField] private GameObject ui;
     [SerializeField] private LayerMask packableLayerMask;
     [SerializeField] private LayerMask gridLayerMask;
     [SerializeField] private Tilemap bagTilemap;
     [SerializeField] private Grid grid;
     public GameObject[] packableObjects;
 
-
-    public static Player Instance { get; private set; }
+    public static Player instance { get; private set; }
 
     private void Awake() {
-        Instance = this;
+        instance = this;
     }
 
     // Update is called once per frame
@@ -163,14 +163,14 @@ public class Player : MonoBehaviour
         return overlaps;
     }
 
-    public bool wonGame() {
+    public void checkIfWonGame() {
         foreach(GameObject packableObject in packableObjects) {
             if(!packableObject.GetComponent<Packable>().IsInBag()) {
-                return false;
+                return;
             }
         }
 
-        return true;
+        ui.GetComponent<UIManager>().WinGame();
     }
 
 }
