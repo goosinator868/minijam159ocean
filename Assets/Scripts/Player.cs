@@ -11,6 +11,10 @@ public class Player : MonoBehaviour
     private Vector3 offset;
     [SerializeField] private LayerMask packableLayerMask;
     [SerializeField] private LayerMask gridLayerMask;
+    [SerializeField] private Tilemap bagTilemap;
+    [SerializeField] private Grid grid;
+    public GameObject[] packableObjects;
+
 
     // Start is called before the first frame update
     void Start()
@@ -31,10 +35,10 @@ public class Player : MonoBehaviour
             if (targetObject && targetObject.GetComponentInParent<Packable>()) {
                 selectedObject = targetObject.transform.parent.gameObject;
                 selectedPackable = selectedObject.GetComponentInParent<Packable>();
-                offset = selectedObject.transform.position - mousePosition;
+                Vector3 mouseSnapTo = selectedPackable.GetMouseSnapTo();
+                offset = new Vector3(0 - mouseSnapTo.x, 0 - mouseSnapTo.y, mouseSnapTo.z - mousePosition.z); //selectedObject.transform.position - mousePosition;
+                Debug.Log(offset);
             }
-
-            Collider2D gridObject = Physics2D.OverlapPoint(mousePosition, gridLayerMask);
         }
 
         // Move selected object
@@ -48,14 +52,56 @@ public class Player : MonoBehaviour
         // Put down object
         if (Input.GetMouseButtonUp(0) && selectedObject) {
             Collider2D gridObject = Physics2D.OverlapPoint(mousePosition, gridLayerMask);
-            if (gridObject) {
-                Vector3 tilePosition = new Vector3((int) Math.Round(mousePosition.x), (int) Math.Round(mousePosition.y), mousePosition.z - mousePosition.z);
-                // TileBase tile = gridObject.GetComponent<Tilemap>().GetTile(tilePosition);
-                selectedPackable.AttemptToClaimTiles();
-                selectedPackable.UpdateSetState(tilePosition, selectedObject.transform.rotation);
-            } else {
-                selectedPackable.ReturnToSetState();
+            Vector3 worldPosition = new Vector3((float) Math.Round(mousePosition.x + offset.x), (float) Math.Round(mousePosition.y + offset.y), (float) Math.Round(mousePosition.y + offset.y));
+            
+            // Remove from bag
+            if (!gridObject) {
+                selectedPackable.UpdateSetState(worldPosition, selectedObject.transform.rotation);
+                                    
+                selectedObject = null;
+                selectedPackable = null;
+                return;
             }
+
+            // ** Check if valid location in bag
+            // Populate set of packable; if set is fully emptied, the location is valid
+            Tilemap packableTilemap = selectedPackable.GetTilemap();
+            HashSet<Vector3Int> packableWorldCellPositions = new HashSet<Vector3Int>();
+            foreach (Vector3Int packablePosition in packableTilemap.cellBounds.allPositionsWithin) {
+                if (packableTilemap.GetTile(packablePosition)) {
+                    Vector3 worldPackablePosition = packableTilemap.CellToWorld(packablePosition);
+                    Vector3Int worldPackableCellPosition = new Vector3Int((int) Math.Round(worldPackablePosition.x), (int) Math.Round(worldPackablePosition.y), (int) Math.Round(worldPackablePosition.z));
+                    // Debug.Log("world: " + worldPackablePosition + " cell: " + worldPackableCellPosition);
+                    packableWorldCellPositions.Add(worldPackableCellPosition);
+                }
+            }
+            Debug.Log(packableWorldCellPositions.Count);
+
+            foreach (Vector3Int bagPosition in bagTilemap.cellBounds.allPositionsWithin) {
+                Vector3Int worldBagCellPosition = grid.WorldToCell(bagTilemap.CellToWorld(bagPosition));
+                // Check that bag tile is valid
+                if (bagTilemap.GetTile(bagPosition)) {
+                    foreach (Vector3Int packablePosition in packableWorldCellPositions) {
+                        // Get world cell location of packable object
+                        if (packablePosition.Equals(worldBagCellPosition)) {
+                            packableWorldCellPositions.Remove(packablePosition);
+
+                            // Removed every spot
+                            if (packableWorldCellPositions.Count == 0) {
+                                selectedPackable.UpdateSetState(worldPosition, selectedObject.transform.rotation);
+                                
+                                selectedObject = null;
+                                selectedPackable = null;
+                                return;
+                            }
+                            
+                            break;
+                        }
+                    }
+                }
+            }
+
+            selectedPackable.ReturnToSetState();
 
             selectedObject = null;
             selectedPackable = null;
