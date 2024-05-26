@@ -17,10 +17,10 @@ public class Player : MonoBehaviour
     public GameObject[] packableObjects;
 
 
-    // Start is called before the first frame update
-    void Start()
-    {
+    public static Player Instance { get; private set; }
 
+    private void Awake() {
+        Instance = this;
     }
 
     // Update is called once per frame
@@ -93,6 +93,7 @@ public class Player : MonoBehaviour
                 return;
             }
 
+            selectedPackable.PutInBag();
             selectedPackable.UpdateSetState(worldPosition, selectedObject.transform.rotation);
 
             selectedObject = null;
@@ -160,6 +161,16 @@ public class Player : MonoBehaviour
             }
 
         return overlaps;
+    }
+
+    public bool wonGame() {
+        foreach(GameObject packableObject in packableObjects) {
+            if(!packableObject.GetComponent<Packable>().IsInBag()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

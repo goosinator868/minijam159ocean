@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: game_jam_palette_0
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: -485372046, guid: 80e71be363823154eb549b1d19068604, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8396226, g: 0.8396226, b: 0.8396226, a: 0.79607844}
   m_Transform:
     e00: 1
     e01: 0

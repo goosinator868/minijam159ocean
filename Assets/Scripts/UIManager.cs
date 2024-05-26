@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject inGamePanel;
     [SerializeField] GameObject pausePanel;
     [SerializeField] GameObject gamePanel;
+    [SerializeField] GameObject howToPlayPanel;
     // Start is called before the first frame update
     void Start()
     {
@@ -47,6 +48,15 @@ public class UIManager : MonoBehaviour
 
     public void ReturnToTitle() {
         titlePanel.SetActive(true);
+        inGamePanel.SetActive(false);
+        pausePanel.SetActive(false);
+        gamePanel.SetActive(false);
+        howToPlayPanel.SetActive(false);
+    }
+
+    public void HowToPlay() {
+        howToPlayPanel.SetActive(true);
+        titlePanel.SetActive(false);
         inGamePanel.SetActive(false);
         pausePanel.SetActive(false);
         gamePanel.SetActive(false);

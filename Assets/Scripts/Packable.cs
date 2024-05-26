@@ -10,6 +10,7 @@ public class Packable : MonoBehaviour
     private Vector3 startPosition;
     private Quaternion setRotation;
     private Quaternion startRotation;
+    private bool inBag = false;
     [SerializeField] private int selectedOrientationIndex;
     [SerializeField] private GameObject[] orientation;
     private Transform mouseSnapTo;
@@ -27,6 +28,7 @@ public class Packable : MonoBehaviour
     }
 
     public void ReturnToStartState() {
+        TakeOutOfBag();
         UpdateSetState(startPosition, startRotation);
         UpdateOccupiedWorldPositions();
     }
@@ -94,5 +96,17 @@ public class Packable : MonoBehaviour
 
     public void Rotate(bool clockwise) {
         
+    }
+
+    public bool IsInBag() {
+        return inBag;
+    }
+
+    public void PutInBag() {
+        inBag = true;
+    }
+
+    public void TakeOutOfBag() {
+        inBag = false;
     }
 }
