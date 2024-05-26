@@ -7,6 +7,7 @@ using UnityEngine.Tilemaps;
 public class Player : MonoBehaviour
 {
     private GameObject selectedObject;
+    private Packable selectedPackable;
     private Vector3 offset;
     [SerializeField] private LayerMask packableLayerMask;
     [SerializeField] private LayerMask gridLayerMask;
@@ -24,11 +25,13 @@ public class Player : MonoBehaviour
 
         // Pick up object
         if (Input.GetMouseButtonDown(0)) {
-            
-            Collider2D targetObject = Physics2D.OverlapPoint(mousePosition, packableLayerMask);
 
-            if (targetObject && targetObject.GetComponent<Packable>()) {
-                selectedObject = targetObject.transform.gameObject;
+            Collider2D targetObject = Physics2D.OverlapPoint(mousePosition, packableLayerMask);
+            Debug.Log(targetObject.GetComponent<Packable>());
+
+            if (targetObject && targetObject.GetComponentInParent<Packable>()) {
+                selectedObject = targetObject.transform.parent.gameObject;
+                selectedPackable = selectedObject.GetComponentInParent<Packable>();
                 offset = selectedObject.transform.position - mousePosition;
             }
 
@@ -38,6 +41,9 @@ public class Player : MonoBehaviour
         // Move selected object
         if (selectedObject) {
             selectedObject.transform.position = mousePosition + offset;
+            if (Input.GetKeyDown(KeyCode.Space)) {
+                selectedPackable.ChangeOrientation();
+            }
         }
         
         // Put down object
@@ -46,15 +52,15 @@ public class Player : MonoBehaviour
             if (gridObject) {
                 Vector3 tilePosition = new Vector3((int) Math.Round(mousePosition.x), (int) Math.Round(mousePosition.y), mousePosition.z - mousePosition.z);
                 // TileBase tile = gridObject.GetComponent<Tilemap>().GetTile(tilePosition);
-                selectedObject.GetComponent<Packable>().UpdateSetState(tilePosition, selectedObject.transform.rotation);
+                selectedPackable.UpdateSetState(tilePosition, selectedObject.transform.rotation);
             } else {
-                selectedObject.GetComponent<Packable>().ReturnToSetState();
+                selectedPackable.ReturnToSetState();
             }
 
             selectedObject = null;
+            selectedPackable = null;
         }
 
     }
-
 
 }

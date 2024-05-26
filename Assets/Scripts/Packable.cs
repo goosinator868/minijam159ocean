@@ -6,6 +6,8 @@ public class Packable : MonoBehaviour
 {
     private Vector3 setPosition;
     private Quaternion setRotation;
+    [SerializeField] private int selectedOrientationIndex;
+    [SerializeField] private GameObject[] orientation;
 
     // Start is called before the first frame update
     void Start()
@@ -17,7 +19,6 @@ public class Packable : MonoBehaviour
     public void ReturnToSetState() {
         transform.position = setPosition;
         transform.rotation = setRotation;
-        Debug.Log("Return to previous state:" + setPosition);
     }
 
     public void UpdateSetState(Vector3 position, Quaternion rotation) {
@@ -25,6 +26,15 @@ public class Packable : MonoBehaviour
         setRotation = rotation;
         transform.position = setPosition;
         transform.rotation = setRotation;
-        Debug.Log("New location:" + setPosition);
+    }
+    public void ChangeOrientation() {
+        orientation[selectedOrientationIndex].SetActive(false);
+        selectedOrientationIndex++;
+        if (selectedOrientationIndex >= orientation.Length) {
+            selectedOrientationIndex = 0;
+        }
+        
+        orientation[selectedOrientationIndex].SetActive(true);
+        Debug.Log(selectedOrientationIndex);
     }
 }
